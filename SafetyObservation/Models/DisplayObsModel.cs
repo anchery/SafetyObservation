@@ -15,5 +15,8 @@ namespace SafetyObservation.Models
         public string PICCode { get; set; }
         public string Observer { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
+        public DateTime ObsDate { get; set; }
+
     }
 }

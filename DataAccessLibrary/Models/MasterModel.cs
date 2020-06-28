@@ -9,5 +9,6 @@ namespace DataAccessLibrary.Models
         public string SerialNo { get; set; }
         public string PICCode { get; set; }
         public string Observer { get; set; }
+        public DateTime ObsDate { get; set; }
     }
 }
