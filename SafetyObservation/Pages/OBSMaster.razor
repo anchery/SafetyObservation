@@ -1,0 +1,68 @@
+﻿@page "/safety"
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@using SafetyObservation.Models
+
+@inject IObsData _db
+
+<h3>Safety Observation</h3>
+<h4>Insert New Person</h4>
+<EditForm Model="@newObs" OnValidSubmit="@InsertObs">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText id="picCode" @bind-Value="newObs.PICCode" />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+@if (obs == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Serial No</th>
+                <th>PIC Code</th>
+                <th>Observer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var data in obs)
+            {
+                <tr>
+                    <td>@data.SerialNo</td>
+                    <td>@data.PICCode</td>
+                    <td>@data.Observer</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<MasterModel> obs;
+    private DisplayObsModel newObs = new DisplayObsModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        obs = await _db.GetObs();
+    }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private async Task InsertObs()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        MasterModel m = new MasterModel
+        {
+            PICCode = newObs.PICCode,
+            Observer = user.Identity.Name
+        };
+
+        await _db.InsertObs(m);
+        obs = await _db.GetObs();
+    }
+}
